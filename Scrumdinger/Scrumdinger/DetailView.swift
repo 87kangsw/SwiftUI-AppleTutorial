@@ -14,9 +14,22 @@ struct DetailView: View {
     
     var body: some View {
         List {
-            MeetingInfoSection(scrum: scrum) // Section
+            MeetingInfoSection(scrum: $scrum) // Section
             
-            AttendeesSection(scrum: scrum) // Section
+            AttendeesSection(scrum: $scrum) // Section
+            
+            Section(header: Text("History")) {
+                if scrum.history.isEmpty {
+                    Label("No meetings yet", systemImage: "calendar.badge.exclamationmark")
+                }
+                
+                ForEach(scrum.history) { history in
+                    HStack {
+                        Image(systemName: "calendar")
+                        Text(history.date, style: .date)
+                    }
+                }
+            }
         }
         .listStyle(InsetGroupedListStyle())
         .navigationBarItems(trailing: Button("Edit") {
@@ -48,12 +61,12 @@ struct DetailView_Previews: PreviewProvider {
 }
 
 struct MeetingInfoSection: View {
-    let scrum: DailyScrum
+    @Binding var scrum: DailyScrum
     
     var body: some View {
         Section(header: Text("Meeting Info")) {
             NavigationLink(
-                destination: MeetingView(),
+                destination: MeetingView(scrum: $scrum),
                 label: {
                     Label("Start meeting", systemImage: "timer")
                         .font(.headline)
@@ -80,7 +93,7 @@ struct MeetingInfoSection: View {
 }
 
 struct AttendeesSection: View {
-    let scrum: DailyScrum
+    @Binding var scrum: DailyScrum
     
     var body: some View {
         Section(header: Text("Attendees")) {
