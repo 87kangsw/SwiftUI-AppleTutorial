@@ -18,18 +18,7 @@ struct DetailView: View {
             
             AttendeesSection(scrum: $scrum) // Section
             
-            Section(header: Text("History")) {
-                if scrum.history.isEmpty {
-                    Label("No meetings yet", systemImage: "calendar.badge.exclamationmark")
-                }
-                
-                ForEach(scrum.history) { history in
-                    HStack {
-                        Image(systemName: "calendar")
-                        Text(history.date, style: .date)
-                    }
-                }
-            }
+            HistorySection(scrum: $scrum)
         }
         .listStyle(InsetGroupedListStyle())
         .navigationBarItems(trailing: Button("Edit") {
@@ -101,6 +90,29 @@ struct AttendeesSection: View {
                 Label(attendee, systemImage: "person")
                     .accessibilityLabel(Text("Person"))
                     .accessibilityValue(Text(attendee))
+            }
+        }
+    }
+}
+
+struct HistorySection: View {
+    @Binding var scrum: DailyScrum
+    
+    var body: some View {
+        Section(header: Text("History")) {
+            if scrum.history.isEmpty {
+                Label("No meetings yet", systemImage: "calendar.badge.exclamationmark")
+            }
+            
+            ForEach(scrum.history) { history in
+                NavigationLink(
+                    destination: HistoryView(history: history),
+                    label: {
+                        HStack {
+                            Image(systemName: "calendar")
+                            Text(history.date, style: .date)
+                        }
+                    })
             }
         }
     }
